@@ -15,7 +15,7 @@ public class IncidentService {
     private IncidentRepository incidentRepository;
 
     public Incident createIncident(Incident incident) {
-        incident.setStatus("REPORTED");
+        incident.setStatus("OPEN");
         return incidentRepository.save(incident);
     }
 
@@ -31,5 +31,13 @@ public class IncidentService {
         incident.setStatus(status);
 
         return incidentRepository.save(incident);
+    }
+
+    public List<Incident> searchIncidents(String keyword) {
+        return incidentRepository.findByTitleContainingIgnoreCase(keyword);
+    }
+
+    public List<Incident> filterByStatus(String status) {
+        return incidentRepository.findByStatus(status);
     }
 }

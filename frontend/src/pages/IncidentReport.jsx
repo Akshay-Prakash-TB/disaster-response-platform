@@ -69,13 +69,20 @@ function IncidentReport() {
 
         <br /><br />
 
-        <input
-          type="text"
-          name="severity"
-          placeholder="Severity"
-          value={formData.severity}
-          onChange={handleChange}
-        />
+        <select
+        value={formData.severity}
+        onChange={(e) =>
+        setFormData({
+        ...formData,
+        severity: e.target.value
+        })}>
+        <option value="">Select Severity</option>
+        <option value="LOW">LOW</option>
+        <option value="MEDIUM">MEDIUM</option>
+        <option value="HIGH">HIGH</option>
+        <option value="VERY_HIGH">VERY HIGH</option>
+        <option value="CRITICAL">CRITICAL</option>
+        </select>
 
         <br /><br />
 

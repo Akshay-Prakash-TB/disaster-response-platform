@@ -38,4 +38,14 @@ public class IncidentController {
     public Incident updateStatus(@PathVariable Long id, @RequestParam String status) {
         return incidentService.updateStatus(id, status);
     }
+
+    @GetMapping("/search")
+    public List<Incident> searchIncidents(@RequestParam String keyword) {
+        return incidentService.searchIncidents(keyword);
+    }
+
+    @GetMapping("/filter")
+    public List<Incident> filterByStatus(@RequestParam String status) {
+        return incidentService.filterByStatus(status);
+    }
 }
