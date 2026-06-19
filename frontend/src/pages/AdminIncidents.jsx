@@ -5,6 +5,8 @@ function AdminIncidents() {
   const [incidents, setIncidents] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
+  const [resources, setResources] = useState([]);
+  const [selectedResources, setSelectedResources] = useState({});
 
   const fetchIncidents = async () => {
     try {
@@ -18,39 +20,51 @@ function AdminIncidents() {
     }
   };
 
-  const searchIncidents = async () => {
-  try {
-    if (searchKeyword.trim() === "") {
-      fetchIncidents();
-      return;
+  const fetchResources = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8080/resource/all"
+      );
+
+      setResources(response.data);
+    } catch (error) {
+      console.error(error);
     }
+  };
 
-    const response = await axios.get(
-      `http://localhost:8080/incident/search?keyword=${searchKeyword}`
-    );
+  const searchIncidents = async () => {
+    try {
+      if (searchKeyword.trim() === "") {
+        fetchIncidents();
+        return;
+      }
 
-    setIncidents(response.data);
-  } catch (error) {
-    console.error(error);
-  }
+      const response = await axios.get(
+        `http://localhost:8080/incident/search?keyword=${searchKeyword}`
+      );
+
+      setIncidents(response.data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const filterIncidents = async (status) => {
-        try {
-            if (status === "ALL") {
-            fetchIncidents();
-            return;
-            }
+    try {
+      if (status === "ALL") {
+        fetchIncidents();
+        return;
+      }
 
-            const response = await axios.get(
-            `http://localhost:8080/incident/filter?status=${status}`
-            );
+      const response = await axios.get(
+        `http://localhost:8080/incident/filter?status=${status}`
+      );
 
-            setIncidents(response.data);
-        } catch (error) {
-            console.error(error);
-        }
-    };
+      setIncidents(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const updateStatus = async (id, status) => {
     try {
@@ -64,55 +78,83 @@ function AdminIncidents() {
     }
   };
 
+  const assignResource = async (
+    incidentId,
+    resourceId
+  ) => {
+    if (!resourceId) {
+      alert("Please select a resource");
+      return;
+    }
+
+    try {
+      await axios.put(
+        `http://localhost:8080/resource/assign?resourceId=${resourceId}&incidentId=${incidentId}`
+      );
+
+      fetchIncidents();
+      fetchResources();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     fetchIncidents();
+    fetchResources();
   }, []);
 
   return (
     <div>
       <h2>All Incidents</h2>
 
-        <div style={{ marginBottom: "20px" }}>
+      <div style={{ marginBottom: "20px" }}>
         <input
-            type="text"
-            placeholder="Search by title..."
-            value={searchKeyword}
-            onChange={(e) => setSearchKeyword(e.target.value)}
+          type="text"
+          placeholder="Search by title..."
+          value={searchKeyword}
+          onChange={(e) =>
+            setSearchKeyword(e.target.value)
+          }
         />
 
         <button
-            onClick={searchIncidents}
-            style={{ marginLeft: "10px" }}
+          onClick={searchIncidents}
+          style={{ marginLeft: "10px" }}
         >
-        Search
+          Search
         </button>
 
         <button
-            onClick={fetchIncidents}
-            style={{ marginLeft: "10px" }}
+          onClick={fetchIncidents}
+          style={{ marginLeft: "10px" }}
         >
-        Reset
+          Reset
         </button>
-        </div>
+      </div>
 
-        <div style={{ marginBottom: "20px" }}>
-            <label>Status Filter: </label>
+      <div style={{ marginBottom: "20px" }}>
+        <label>Status Filter: </label>
 
-            <select
-                value={statusFilter}
-                onChange={(e) => {
-                const status = e.target.value;
-                setStatusFilter(status);
-                filterIncidents(status);
-                }}
-            >
-                <option value="ALL">All</option>
-                <option value="OPEN">OPEN</option>
-                <option value="ASSIGNED">ASSIGNED</option>
-                <option value="IN_PROGRESS">IN_PROGRESS</option>
-                <option value="RESOLVED">RESOLVED</option>
-            </select>
-        </div>
+        <select
+          value={statusFilter}
+          onChange={(e) => {
+            const status = e.target.value;
+            setStatusFilter(status);
+            filterIncidents(status);
+          }}
+        >
+          <option value="ALL">ALL</option>
+          <option value="OPEN">OPEN</option>
+          <option value="ASSIGNED">ASSIGNED</option>
+          <option value="IN_PROGRESS">
+            IN_PROGRESS
+          </option>
+          <option value="RESOLVED">
+            RESOLVED
+          </option>
+        </select>
+      </div>
 
       <table border="1" cellPadding="10">
         <thead>
@@ -122,6 +164,7 @@ function AdminIncidents() {
             <th>Description</th>
             <th>Severity</th>
             <th>Status</th>
+            <th>Assign Resource</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -135,33 +178,93 @@ function AdminIncidents() {
               <td>{incident.severity}</td>
               <td>{incident.status}</td>
 
-            <td>
-            <button
-                onClick={() =>
-                updateStatus(incident.id, "ASSIGNED")
-                }
-            >
-                Assign
-            </button>
+              <td>
+                <select
+                  value={
+                    selectedResources[
+                      incident.id
+                    ] || ""
+                  }
+                  onChange={(e) =>
+                    setSelectedResources({
+                      ...selectedResources,
+                      [incident.id]:
+                        e.target.value,
+                    })
+                  }
+                >
+                  <option value="">
+                    Select Resource
+                  </option>
 
-            <button
-                onClick={() =>
-                updateStatus(incident.id, "IN_PROGRESS")
-                }
-                style={{ marginLeft: "10px" }}
-            >
-                Start
-            </button>
+                  {resources
+                    .filter(
+                      (resource) =>
+                        resource.status ===
+                        "AVAILABLE"
+                    )
+                    .map((resource) => (
+                      <option
+                        key={resource.id}
+                        value={resource.id}
+                      >
+                        {resource.name} (
+                        {resource.type})
+                      </option>
+                    ))}
+                </select>
 
-            <button
-                onClick={() =>
-                updateStatus(incident.id, "RESOLVED")
-                }
-                style={{ marginLeft: "10px" }}
-            >
-                Resolve
-            </button>
-            </td>
+                <button
+                  style={{
+                    marginLeft: "10px",
+                  }}
+                  onClick={() =>
+                    assignResource(
+                      incident.id,
+                      selectedResources[
+                        incident.id
+                      ]
+                    )
+                  }
+                >
+                  Assign
+                </button>
+              </td>
+
+              <td>
+                <button
+                  disabled={
+                    incident.status !==
+                    "ASSIGNED"
+                  }
+                  onClick={() =>
+                    updateStatus(
+                      incident.id,
+                      "IN_PROGRESS"
+                    )
+                  }
+                >
+                  Start
+                </button>
+
+                <button
+                  style={{
+                    marginLeft: "10px",
+                  }}
+                  disabled={
+                    incident.status !==
+                    "IN_PROGRESS"
+                  }
+                  onClick={() =>
+                    updateStatus(
+                      incident.id,
+                      "RESOLVED"
+                    )
+                  }
+                >
+                  Resolve
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>

@@ -3,6 +3,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import IncidentReport from "./pages/IncidentReport";
 import AdminIncidents from "./pages/AdminIncidents";
+import Resources from "./pages/Resources";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/incident" element={<IncidentReport />} />
         <Route path="/admin/incidents" element={<AdminIncidents />} />
+        <Route path="/resources" element={<Resources />} />
       </Routes>
     </BrowserRouter>
   );
