@@ -4,6 +4,7 @@ import Register from "./pages/Register";
 import IncidentReport from "./pages/IncidentReport";
 import AdminIncidents from "./pages/AdminIncidents";
 import Resources from "./pages/Resources";
+import IncidentMap from "./pages/IncidentMap";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/incident" element={<IncidentReport />} />
         <Route path="/admin/incidents" element={<AdminIncidents />} />
         <Route path="/resources" element={<Resources />} />
+        <Route path="/map" element={<IncidentMap />} />
       </Routes>
     </BrowserRouter>
   );

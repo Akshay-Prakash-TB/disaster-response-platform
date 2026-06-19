@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import MapPicker from "../components/MapPicker";
 
 function Resources() {
   const [resources, setResources] = useState([]);
 
   const [formData, setFormData] = useState({
     name: "",
-    type: ""
+    type: "",
+    latitude: "",
+    longitude: "",
   });
 
   const fetchResources = async () => {
@@ -32,7 +35,9 @@ function Resources() {
 
       setFormData({
         name: "",
-        type: ""
+        type: "",
+        latitude: "",
+        longitude: "",
       });
 
       fetchResources();
@@ -57,7 +62,7 @@ function Resources() {
           onChange={(e) =>
             setFormData({
               ...formData,
-              name: e.target.value
+              name: e.target.value,
             })
           }
         />
@@ -67,7 +72,7 @@ function Resources() {
           onChange={(e) =>
             setFormData({
               ...formData,
-              type: e.target.value
+              type: e.target.value,
             })
           }
         >
@@ -88,6 +93,28 @@ function Resources() {
           </option>
         </select>
 
+        <h4>Select Resource Location</h4>
+
+        <MapPicker
+          setCoordinates={(coords) =>
+            setFormData({
+              ...formData,
+              latitude: coords.latitude,
+              longitude: coords.longitude,
+            })
+          }
+        />
+
+        <p>
+          Latitude:{" "}
+          {formData.latitude || "Not Selected"}
+        </p>
+
+        <p>
+          Longitude:{" "}
+          {formData.longitude || "Not Selected"}
+        </p>
+
         <button type="submit">
           Add Resource
         </button>
@@ -102,6 +129,8 @@ function Resources() {
             <th>Name</th>
             <th>Type</th>
             <th>Status</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
           </tr>
         </thead>
 
@@ -112,6 +141,8 @@ function Resources() {
               <td>{resource.name}</td>
               <td>{resource.type}</td>
               <td>{resource.status}</td>
+              <td>{resource.latitude}</td>
+              <td>{resource.longitude}</td>
             </tr>
           ))}
         </tbody>

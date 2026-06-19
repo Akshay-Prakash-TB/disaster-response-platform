@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import MapPicker from "../components/MapPicker";
 
 function IncidentReport() {
   const [formData, setFormData] = useState({
@@ -86,35 +87,27 @@ function IncidentReport() {
 
         <br /><br />
 
-        <input
-          type="number"
-          step="any"
-          name="latitude"
-          placeholder="Latitude"
-          value={formData.latitude}
-          onChange={handleChange}
+        <h3>Select Incident Location</h3>
+
+        <MapPicker
+          setCoordinates={(coords) =>
+            setFormData({
+              ...formData,
+              latitude: coords.latitude,
+              longitude: coords.longitude,
+            })
+          }
         />
 
         <br /><br />
 
-        <input
-          type="number"
-          step="any"
-          name="longitude"
-          placeholder="Longitude"
-          value={formData.longitude}
-          onChange={handleChange}
-        />
+        <p>
+          Latitude: {formData.latitude || "Not Selected"}
+        </p>
 
-        <br /><br />
-
-        <input
-          type="number"
-          name="citizenId"
-          placeholder="Citizen ID"
-          value={formData.citizenId}
-          onChange={handleChange}
-        />
+        <p>
+          Longitude: {formData.longitude || "Not Selected"}
+        </p>
 
         <br /><br />
 
