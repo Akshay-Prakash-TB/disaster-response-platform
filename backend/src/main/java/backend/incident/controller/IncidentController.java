@@ -48,4 +48,10 @@ public class IncidentController {
     public List<Incident> filterByStatus(@RequestParam String status) {
         return incidentService.filterByStatus(status);
     }
+
+    @GetMapping("/citizen/{citizenId}")
+    public List<Incident>
+    getCitizenIncidents(@PathVariable Long citizenId) {
+        return incidentService.getCitizenIncidents(citizenId);
+    }
 }

@@ -1,27 +1,82 @@
 import { useState } from "react";
 import api from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
     setError("");
     setMessage("");
 
     try {
-      const res = await api.post("/auth/login", {
-        email,
-        password
-      });
 
-      localStorage.setItem("token", res.data);
-      setMessage("Login successful ✅");
+      const res = await api.post(
+        "/auth/login",
+        {
+          email,
+          password
+        }
+      );
+
+      localStorage.setItem(
+        "token",
+        res.data.token
+      );
+
+      localStorage.setItem(
+        "userId",
+        res.data.userId
+      );
+
+      localStorage.setItem(
+        "name",
+        res.data.name
+      );
+
+      localStorage.setItem(
+        "role",
+        res.data.role
+      );
+
+      setMessage(
+        "Login successful ✅"
+      );
+
+      if (
+        res.data.role === "ADMIN"
+      ) {
+
+        navigate(
+          "/admin/incidents"
+        );
+
+      } else if (
+        res.data.role === "RESCUE"
+      ) {
+
+        navigate(
+          "/rescue"
+        );
+
+      } else if (
+        res.data.role === "CITIZEN"
+      ) {
+
+        navigate(
+          "/citizen"
+        );
+      }
+
     } catch (err) {
+
       setError(
-        err.response?.data?.message || "Invalid credentials ❌"
+        err.response?.data?.message ||
+        "Invalid credentials ❌"
       );
     }
   };

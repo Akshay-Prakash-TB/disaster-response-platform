@@ -3,6 +3,7 @@ package backend.auth.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import backend.auth.dto.LoginResponse;
 import backend.auth.entity.User;
 import backend.auth.jwt.JwtUtil;
 import backend.auth.repository.UserRepository;
@@ -24,15 +25,30 @@ public class UserService {
 }
 
     // LOGIN USER
-    public String loginUser(String email, String password) {
+    public LoginResponse loginUser(
+        String email,
+        String password) {
 
-    User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+        User user =
+                userRepository.findByEmail(email)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "User not found"));
 
-    if (!user.getPassword().equals(password)) {
-        throw new RuntimeException("Invalid password");
+        if (!user.getPassword().equals(password)) {
+            throw new RuntimeException(
+                    "Invalid password");
+        }
+
+        String token =
+                JwtUtil.generateToken(
+                        user.getEmail());
+
+        return new LoginResponse(
+                token,
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getRole());
     }
-
-    return JwtUtil.generateToken(user.getEmail());
-}
 }

@@ -7,9 +7,9 @@ function IncidentReport() {
     title: "",
     description: "",
     severity: "",
+    incidentType: "",
     latitude: "",
-    longitude: "",
-    citizenId: ""
+    longitude: ""
   });
 
   const [message, setMessage] = useState("");
@@ -25,24 +25,39 @@ function IncidentReport() {
     e.preventDefault();
 
     try {
+
+      const incidentData = {
+        ...formData,
+        citizenId: Number(
+          localStorage.getItem("userId")
+        )
+      };
+
       await axios.post(
         "http://localhost:8080/incident/report",
-        formData
+        incidentData
       );
 
-      setMessage("Incident reported successfully");
+      setMessage(
+        "Incident reported successfully"
+      );
 
       setFormData({
         title: "",
         description: "",
         severity: "",
+        incidentType: "",
         latitude: "",
-        longitude: "",
-        citizenId: ""
+        longitude: ""
       });
 
     } catch (error) {
-      setMessage("Failed to report incident");
+
+      console.error(error);
+
+      setMessage(
+        "Failed to report incident"
+      );
     }
   };
 
@@ -51,6 +66,7 @@ function IncidentReport() {
       <h2>Report Incident</h2>
 
       <form onSubmit={handleSubmit}>
+
         <input
           type="text"
           name="title"
@@ -71,30 +87,75 @@ function IncidentReport() {
         <br /><br />
 
         <select
-        value={formData.severity}
-        onChange={(e) =>
-        setFormData({
-        ...formData,
-        severity: e.target.value
-        })}>
-        <option value="">Select Severity</option>
-        <option value="LOW">LOW</option>
-        <option value="MEDIUM">MEDIUM</option>
-        <option value="HIGH">HIGH</option>
-        <option value="VERY_HIGH">VERY HIGH</option>
-        <option value="CRITICAL">CRITICAL</option>
+          value={formData.severity}
+          onChange={(e) =>
+            setFormData({
+              ...formData,
+              severity: e.target.value
+            })
+          }
+        >
+          <option value="">
+            Select Severity
+          </option>
+
+          <option value="LOW">
+            LOW
+          </option>
+
+          <option value="MEDIUM">
+            MEDIUM
+          </option>
+
+          <option value="HIGH">
+            HIGH
+          </option>
+
+          <option value="VERY_HIGH">
+            VERY HIGH
+          </option>
+
+          <option value="CRITICAL">
+            CRITICAL
+          </option>
         </select>
 
         <br /><br />
 
-        <h3>Select Incident Location</h3>
+        <select
+          name="incidentType"
+          value={formData.incidentType}
+          onChange={handleChange}
+        >
+          <option value="">
+            Select Type
+          </option>
+
+          <option value="FLOOD">
+            FLOOD
+          </option>
+
+          <option value="MEDICAL">
+            MEDICAL
+          </option>
+
+          <option value="RESCUE">
+            RESCUE
+          </option>
+        </select>
+
+        <br /><br />
+
+        <h3>
+          Select Incident Location
+        </h3>
 
         <MapPicker
           setCoordinates={(coords) =>
             setFormData({
               ...formData,
               latitude: coords.latitude,
-              longitude: coords.longitude,
+              longitude: coords.longitude
             })
           }
         />
@@ -102,11 +163,15 @@ function IncidentReport() {
         <br /><br />
 
         <p>
-          Latitude: {formData.latitude || "Not Selected"}
+          Latitude:{" "}
+          {formData.latitude ||
+            "Not Selected"}
         </p>
 
         <p>
-          Longitude: {formData.longitude || "Not Selected"}
+          Longitude:{" "}
+          {formData.longitude ||
+            "Not Selected"}
         </p>
 
         <br /><br />
@@ -114,11 +179,14 @@ function IncidentReport() {
         <button type="submit">
           Submit Incident
         </button>
+
       </form>
 
       <br />
 
-      {message && <p>{message}</p>}
+      {message && (
+        <p>{message}</p>
+      )}
     </div>
   );
 }

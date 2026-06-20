@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import backend.auth.dto.AuthResponse;
+import backend.auth.dto.LoginResponse;
 import backend.auth.entity.User;
 import backend.auth.service.UserService;
 
@@ -26,8 +27,11 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody User user) {
-        String token = userService.loginUser(user.getEmail(), user.getPassword());
-        return new AuthResponse("Login successful", token);
+    public LoginResponse login(
+            @RequestBody User user) {
+
+        return userService.loginUser(
+                user.getEmail(),
+                user.getPassword());
     }
 }

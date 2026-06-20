@@ -5,6 +5,9 @@ import IncidentReport from "./pages/IncidentReport";
 import AdminIncidents from "./pages/AdminIncidents";
 import Resources from "./pages/Resources";
 import IncidentMap from "./pages/IncidentMap";
+import RescueTeamDashboard from "./pages/RescueTeamDashboard";
+import CitizenDashboard from "./pages/CitizenDashboard";
+import AssignmentHistory from "./pages/AssignmentHistory";
 
 function App() {
   return (
@@ -16,6 +19,9 @@ function App() {
         <Route path="/admin/incidents" element={<AdminIncidents />} />
         <Route path="/resources" element={<Resources />} />
         <Route path="/map" element={<IncidentMap />} />
+        <Route path="/rescue" element={<RescueTeamDashboard />} />
+        <Route path="/citizen" element={<CitizenDashboard />} />
+        <Route path="/assignments" element={<AssignmentHistory />} />
       </Routes>
     </BrowserRouter>
   );

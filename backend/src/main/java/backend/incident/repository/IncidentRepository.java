@@ -9,4 +9,5 @@ import backend.incident.entity.Incident;
 public interface IncidentRepository extends JpaRepository<Incident, Long> {
     List<Incident> findByTitleContainingIgnoreCase(String keyword);
     List<Incident> findByStatus(String status);
+    List<Incident> findByCitizenId(Long citizenId);
 }

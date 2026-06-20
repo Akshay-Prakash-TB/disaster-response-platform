@@ -40,4 +40,8 @@ public class IncidentService {
     public List<Incident> filterByStatus(String status) {
         return incidentRepository.findByStatus(status);
     }
+
+    public List<Incident> getCitizenIncidents(Long citizenId) {
+        return incidentRepository.findByCitizenId(citizenId);
+    }
 }

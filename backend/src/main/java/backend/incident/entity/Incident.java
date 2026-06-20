@@ -28,6 +28,8 @@ public class Incident {
 
     private Long citizenId;
 
+    private String incidentType;
+
     public Incident() {}
 
     public Long getId() {
@@ -92,5 +94,13 @@ public class Incident {
 
     public void setCitizenId(Long citizenId) {
         this.citizenId = citizenId;
+    }
+
+    public String getIncidentType() {
+        return incidentType;
+    }
+
+    public void setIncidentType(String incidentType) {
+        this.incidentType = incidentType;
     }
 }
