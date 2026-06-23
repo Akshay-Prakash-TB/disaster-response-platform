@@ -8,6 +8,7 @@ import IncidentMap from "./pages/IncidentMap";
 import RescueTeamDashboard from "./pages/RescueTeamDashboard";
 import CitizenDashboard from "./pages/CitizenDashboard";
 import AssignmentHistory from "./pages/AssignmentHistory";
+import VehicleTrackingMap from "./pages/VehicleTrackingMap";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/rescue" element={<RescueTeamDashboard />} />
         <Route path="/citizen" element={<CitizenDashboard />} />
         <Route path="/assignments" element={<AssignmentHistory />} />
+        <Route path="/tracking" element={<VehicleTrackingMap />} />
       </Routes>
     </BrowserRouter>
   );

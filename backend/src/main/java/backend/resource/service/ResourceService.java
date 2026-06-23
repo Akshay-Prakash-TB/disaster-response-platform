@@ -16,6 +16,7 @@ import backend.resource.dto.ResourceRecommendation;
 import backend.resource.dto.RouteInfo;
 import backend.resource.entity.Resource;
 import backend.resource.repository.ResourceRepository;
+import backend.tracking.service.TrackingService;
 
 @Service
 public class ResourceService {
@@ -28,6 +29,9 @@ public class ResourceService {
 
     @Autowired
     private AssignmentService assignmentService;
+
+    @Autowired
+    private TrackingService trackingService;
 
     private final RestClient restClient =
             RestClient.create();
@@ -44,8 +48,8 @@ public class ResourceService {
     }
 
     public Resource assignResource(
-            Long resourceId,
-            Long incidentId) {
+        Long resourceId,
+        Long incidentId) {
 
         Resource resource =
                 resourceRepository.findById(resourceId)
@@ -63,11 +67,11 @@ public class ResourceService {
         incidentRepository.save(incident);
 
         assignmentService.createAssignment(
-        incidentId,
-        resourceId);
+                incidentId,
+                resourceId);
 
         return resourceRepository.save(resource);
-    }
+        }
 
     public RouteInfo getRouteInfo(
             double startLat,

@@ -5,6 +5,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import backend.auth.entity.User;
+import backend.auth.repository.UserRepository;
+import backend.auth.service.UserService;
 import backend.incident.entity.Incident;
 import backend.incident.repository.IncidentRepository;
 
@@ -14,9 +17,30 @@ public class IncidentService {
     @Autowired
     private IncidentRepository incidentRepository;
 
-    public Incident createIncident(Incident incident) {
-        incident.setStatus("OPEN");
-        return incidentRepository.save(incident);
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private UserService userService;
+
+    public Incident createIncident(
+    Incident incident,
+    String token) {
+
+    User user =
+            userService
+                    .getUserFromToken(
+                            token);
+
+    incident.setCitizenId(
+            user.getId());
+
+    incident.setStatus(
+            "OPEN");
+
+    return incidentRepository
+            .save(incident);
+
     }
 
     public List<Incident> getAllIncidents() {
@@ -44,4 +68,18 @@ public class IncidentService {
     public List<Incident> getCitizenIncidents(Long citizenId) {
         return incidentRepository.findByCitizenId(citizenId);
     }
-}
+
+    public List<Incident>
+getMyIncidents(
+        String token) {
+
+        User user =
+                userService
+                        .getUserFromToken(
+                                token);
+
+        return incidentRepository
+                .findByCitizenId(
+                        user.getId());
+    }
+    }

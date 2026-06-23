@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import backend.assignment.entity.Assignment;
 import backend.assignment.repository.AssignmentRepository;
@@ -12,6 +13,7 @@ import backend.incident.entity.Incident;
 import backend.incident.repository.IncidentRepository;
 import backend.resource.entity.Resource;
 import backend.resource.repository.ResourceRepository;
+import backend.tracking.service.TrackingService;
 
 @Service
 public class AssignmentService {
@@ -24,6 +26,9 @@ public class AssignmentService {
 
     @Autowired
     private ResourceRepository resourceRepository;
+
+    @Autowired
+    private TrackingService trackingService;
 
     public Assignment createAssignment(
             Long incidentId,
@@ -48,6 +53,7 @@ public class AssignmentService {
                 .save(assignment);
     }
 
+    @Transactional
     public Assignment acceptMission(
         Long assignmentId) {
 
@@ -61,6 +67,10 @@ public class AssignmentService {
 
         assignment.setAcceptedAt(
                 LocalDateTime.now());
+
+        trackingService.initializeTracking(
+        assignment.getResourceId(),
+        assignment.getIncidentId());
 
         Incident incident =
                 incidentRepository
@@ -78,6 +88,7 @@ public class AssignmentService {
                 .save(assignment);
     }
 
+    @Transactional
     public Assignment completeMission(
         Long assignmentId) {
 
@@ -91,6 +102,9 @@ public class AssignmentService {
 
         assignment.setCompletedAt(
                 LocalDateTime.now());
+
+        trackingService.stopTracking(
+        assignment.getResourceId());
 
         Incident incident =
                 incidentRepository

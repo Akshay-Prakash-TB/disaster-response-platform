@@ -51,4 +51,15 @@ public class UserService {
                 user.getEmail(),
                 user.getRole());
     }
+
+    public User getUserFromToken(
+        String token) {
+
+        String email =
+                JwtUtil.extractEmail(token);
+
+        return userRepository
+                .findByEmail(email)
+                .orElseThrow();
+    }
 }

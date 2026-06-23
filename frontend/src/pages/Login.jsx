@@ -23,22 +23,22 @@ function Login() {
         }
       );
 
-      localStorage.setItem(
+      sessionStorage.setItem(
         "token",
         res.data.token
       );
 
-      localStorage.setItem(
+      sessionStorage.setItem(
         "userId",
         res.data.userId
       );
 
-      localStorage.setItem(
+      sessionStorage.setItem(
         "name",
         res.data.name
       );
 
-      localStorage.setItem(
+      sessionStorage.setItem(
         "role",
         res.data.role
       );

@@ -9,10 +9,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import backend.auth.service.UserService;
 import backend.incident.entity.Incident;
 import backend.incident.service.IncidentService;
 
@@ -24,9 +26,25 @@ public class IncidentController {
     @Autowired
     private IncidentService incidentService;
 
+    @Autowired
+    private UserService userService;
+
     @PostMapping("/report")
-    public Incident reportIncident(@RequestBody Incident incident) {
-        return incidentService.createIncident(incident);
+    public Incident reportIncident(
+    @RequestBody Incident incident,
+    @RequestHeader("Authorization")
+    String authHeader) {
+
+    String token =
+            authHeader.replace(
+                    "Bearer ",
+                    "");
+
+    return incidentService
+            .createIncident(
+                    incident,
+                    token);
+
     }
 
     @GetMapping("/all")
@@ -53,5 +71,22 @@ public class IncidentController {
     public List<Incident>
     getCitizenIncidents(@PathVariable Long citizenId) {
         return incidentService.getCitizenIncidents(citizenId);
+    }
+
+    @GetMapping("/my-incidents")
+    public List<Incident>
+    getMyIncidents(
+        @RequestHeader("Authorization")
+        String authHeader) {
+
+        String token =
+                authHeader
+                        .replace(
+                                "Bearer ",
+                                "");
+
+        return incidentService
+                .getMyIncidents(
+                        token);
     }
 }
