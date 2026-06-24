@@ -3,168 +3,204 @@ import axios from "axios";
 
 function RescueTeamDashboard() {
 
-  const [assignments,
-        setAssignments] =
-        useState([]);
+const [missions, setMissions] =
+useState([]);
 
-  const fetchAssignments =
-    async () => {
+const fetchMissions =
+async () => {
+  try {
 
-      try {
+    const userId =
+      sessionStorage.getItem(
+        "userId"
+      );
 
-        const response =
-          await axios.get(
-            "http://localhost:8080/assignment/assigned"
-          );
+    console.log(
+      "User ID:",
+      userId
+    );
 
-        setAssignments(
-          response.data
-        );
+    const response =
+      await axios.get(
+        `http://localhost:8080/assignment/user/${userId}`
+      );
 
-      } catch(error) {
-        console.error(error);
-      }
-  };
+    console.log(
+      "Missions:",
+      response.data
+    );
 
-  const acceptMission =
-    async (id) => {
+    setMissions(
+      response.data
+    );
 
-      try {
+  } catch (error) {
 
-        await axios.put(
-          `http://localhost:8080/assignment/${id}/accept`
-        );
+    console.error(error);
+  }
+};
 
-        fetchAssignments();
+const acceptMission =
+async (id) => {
+  try {
 
-      } catch(error) {
-        console.error(error);
-      }
-  };
+    await axios.put(
+      `http://localhost:8080/assignment/${id}/accept`
+    );
 
-  const completeMission =
-    async (id) => {
+    fetchMissions();
 
-      try {
+  } catch (error) {
 
-        await axios.put(
-          `http://localhost:8080/assignment/${id}/complete`
-        );
+    console.error(error);
+  }
+};
 
-        fetchAssignments();
+const completeMission =
+async (id) => {
+  try {
 
-      } catch(error) {
-        console.error(error);
-      }
-  };
+    await axios.put(
+      `http://localhost:8080/assignment/${id}/complete`
+    );
 
-  useEffect(() => {
-    fetchAssignments();
-  }, []);
+    fetchMissions();
 
-  return (
-    <div>
+  } catch (error) {
 
-      <h2>
-        Rescue Team Dashboard
-      </h2>
+    console.error(error);
+  }
+};
 
-      <table
-        border="1"
-        cellPadding="10"
-      >
+useEffect(() => {
 
-        <thead>
-          <tr>
-            <th>
-              Assignment ID
-            </th>
+fetchMissions();
 
-            <th>
-              Incident ID
-            </th>
+}, []);
 
-            <th>
-              Resource ID
-            </th>
+return (
+<div style={{ padding: "20px" }}>
 
-            <th>
-              Status
-            </th>
+  <h2>
+    Rescue Team Dashboard
+  </h2>
 
-            <th>
-              Actions
-            </th>
-          </tr>
-        </thead>
+  {missions.length === 0 ? (
 
-        <tbody>
+    <p>
+      No missions assigned.
+    </p>
 
-          {assignments.map(
-            (assignment) => (
+  ) : (
 
-            <tr
-              key={assignment.id}
+    missions.map(
+      (mission) => (
+
+        <div
+          key={
+            mission.assignmentId
+          }
+          style={{
+            border:
+              "1px solid gray",
+            padding:
+              "15px",
+            marginBottom:
+              "15px",
+            borderRadius:
+              "8px"
+          }}
+        >
+
+          <h3>
+            {mission.title}
+          </h3>
+
+          <p>
+            {mission.description}
+          </p>
+
+          <p>
+            Severity:
+            {" "}
+            {mission.severity}
+          </p>
+
+          <p>
+            Citizen:
+            {" "}
+            {mission.citizenName}
+          </p>
+
+          <p>
+            Email:
+            {" "}
+            {mission.citizenEmail}
+          </p>
+
+          <p>
+            Incident ID:
+            {" "}
+            {mission.incidentId}
+          </p>
+
+          <p>
+            Latitude:
+            {" "}
+            {mission.latitude}
+          </p>
+
+          <p>
+            Longitude:
+            {" "}
+            {mission.longitude}
+          </p>
+
+          <p>
+            Status:
+            {" "}
+            {mission.assignmentStatus}
+          </p>
+
+          {mission.assignmentStatus ===
+            "ASSIGNED" && (
+
+            <button
+              onClick={() =>
+                acceptMission(
+                  mission.assignmentId
+                )
+              }
             >
+              Accept Mission
+            </button>
 
-              <td>
-                {assignment.id}
-              </td>
+          )}
 
-              <td>
-                {assignment.incidentId}
-              </td>
+          {mission.assignmentStatus ===
+            "IN_PROGRESS" && (
 
-              <td>
-                {assignment.resourceId}
-              </td>
+            <button
+              onClick={() =>
+                completeMission(
+                  mission.assignmentId
+                )
+              }
+            >
+              Complete Mission
+            </button>
 
-              <td>
-                {assignment.status}
-              </td>
+          )}
 
-              <td>
+        </div>
 
-                {assignment.status ===
-                    "ASSIGNED" && (
+      )
+    )
 
-                    <button
-                        onClick={() =>
-                        acceptMission(
-                            assignment.id
-                        )
-                        }
-                    >
-                        Accept
-                    </button>
-                )}
+  )}
 
-                {assignment.status ===
-                    "IN_PROGRESS" && (
-
-                    <button
-                        onClick={() =>
-                        completeMission(
-                            assignment.id
-                        )
-                        }
-                    >
-                        Complete
-                    </button>
-                )}
-
-              </td>
-
-            </tr>
-
-          ))}
-
-        </tbody>
-
-      </table>
-
-    </div>
-  );
+</div>
+);
 }
 
 export default RescueTeamDashboard;

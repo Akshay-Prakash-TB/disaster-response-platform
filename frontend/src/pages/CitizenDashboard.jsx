@@ -4,176 +4,255 @@ import { Link } from "react-router-dom";
 
 function CitizenDashboard() {
 
-const [incidents, setIncidents] = useState([]);
-const [assignments, setAssignments] = useState({});
+  const [incidents, setIncidents] =
+    useState([]);
 
-const fetchCitizenIncidents = async () => {
+  const [assignments, setAssignments] =
+    useState({});
 
-try {
-
-  const token =
-    sessionStorage.getItem("token");
-
-  const response =
-    await axios.get(
-      "http://localhost:8080/incident/my-incidents",
-      {
-        headers: {
-          Authorization:
-            `Bearer ${token}`
-        }
-      }
-    );
-
-  setIncidents(response.data);
-
-  response.data.forEach(
-    async (incident) => {
+  const fetchCitizenIncidents =
+    async () => {
 
       try {
 
-        const assignmentResponse =
-          await axios.get(
-            `http://localhost:8080/assignment/incident/${incident.id}`
+        const token =
+          sessionStorage.getItem(
+            "token"
           );
 
-        const assignment =
-          assignmentResponse.data;
-
-        if (assignment) {
-
-          const resourceResponse =
-            await axios.get(
-              `http://localhost:8080/resource/${assignment.resourceId}`
-            );
-
-          setAssignments(prev => ({
-            ...prev,
-            [incident.id]: {
-              assignment,
-              resource:
-                resourceResponse.data
+        const response =
+          await axios.get(
+            "http://localhost:8080/incident/my-incidents",
+            {
+              headers: {
+                Authorization:
+                  `Bearer ${token}`
+              }
             }
-          }));
-        }
+          );
+
+        setIncidents(
+          response.data
+        );
+
+        response.data.forEach(
+          async (incident) => {
+
+            try {
+
+              const assignmentResponse =
+                await axios.get(
+                  `http://localhost:8080/assignment/incident/${incident.id}`
+                );
+
+              const assignment =
+                assignmentResponse.data;
+
+              if (assignment) {
+
+                const resourceResponse =
+                  await axios.get(
+                    `http://localhost:8080/resource/${assignment.resourceId}`
+                  );
+
+                setAssignments(
+                  prev => ({
+                    ...prev,
+                    [incident.id]: {
+                      assignment,
+                      resource:
+                        resourceResponse.data
+                    }
+                  })
+                );
+              }
+
+            } catch (error) {
+
+              console.error(
+                error
+              );
+            }
+          }
+        );
 
       } catch (error) {
-        console.error(error);
-      }
-    }
-  );
 
-} catch (error) {
-  console.error(error);
-}
-
-};
-
-useEffect(() => {
-fetchCitizenIncidents();
-}, []);
-
-return (
-<div style={{ padding: "20px" }}>
-
-  <h1>Citizen Dashboard</h1>
-
-  <Link to="/incident">
-    <button>
-      Report New Incident
-    </button>
-  </Link>
-
-  <hr />
-
-  <h2>My Incidents</h2>
-
-  {incidents.length === 0 ? (
-    <p>
-      No incidents reported.
-    </p>
-  ) : (
-    incidents.map(
-      (incident) => {
-
-        const info =
-          assignments[
-            incident.id
-          ];
-
-        return (
-          <div
-            key={incident.id}
-            style={{
-              border:
-                "1px solid gray",
-              padding: "15px",
-              marginBottom: "15px"
-            }}
-          >
-            <h3>
-              {incident.title}
-            </h3>
-
-            <p>
-              {incident.description}
-            </p>
-
-            <p>
-              Severity:
-              {" "}
-              {incident.severity}
-            </p>
-
-            <p>
-              Status:
-              {" "}
-              {incident.status}
-            </p>
-
-            <p>
-              Type:
-              {" "}
-              {incident.incidentType}
-            </p>
-
-            {info ? (
-              <>
-                <hr />
-
-                <p>
-                  Assigned Team:
-                  {" "}
-                  {info.resource.name}
-                </p>
-
-                <p>
-                  Team Type:
-                  {" "}
-                  {info.resource.type}
-                </p>
-
-                <p>
-                  Mission Status:
-                  {" "}
-                  {info.assignment.status}
-                </p>
-              </>
-            ) : (
-              <p>
-                No team assigned yet.
-              </p>
-            )}
-
-          </div>
+        console.error(
+          error
         );
       }
-    )
-  )}
+    };
 
-</div>
+  useEffect(() => {
 
-);
+    fetchCitizenIncidents();
+
+  }, []);
+
+  return (
+    <div
+      style={{
+        padding: "20px"
+      }}
+    >
+
+      <h1>
+        Citizen Dashboard
+      </h1>
+
+      <Link to="/incident">
+        <button>
+          Report New Incident
+        </button>
+      </Link>
+
+      <hr />
+
+      <h2>
+        My Incidents
+      </h2>
+
+      {incidents.length === 0 ? (
+
+        <p>
+          No incidents reported.
+        </p>
+
+      ) : (
+
+        incidents.map(
+          (incident) => {
+
+            const info =
+              assignments[
+                incident.id
+              ];
+
+            return (
+
+              <div
+                key={incident.id}
+                style={{
+                  border:
+                    "1px solid gray",
+                  padding:
+                    "15px",
+                  marginBottom:
+                    "15px"
+                }}
+              >
+
+                <h3>
+                  {incident.title}
+                </h3>
+
+                <p>
+                  {incident.description}
+                </p>
+
+                <p>
+                  Severity:
+                  {" "}
+                  {incident.severity}
+                </p>
+
+                <p>
+                  Status:
+                  {" "}
+                  {incident.status}
+                </p>
+
+                <p>
+                  Type:
+                  {" "}
+                  {incident.incidentType}
+                </p>
+
+                {info ? (
+
+                  <>
+                    <hr />
+
+                    <p>
+                      Assigned Team:
+                      {" "}
+                      {info.resource.name}
+                    </p>
+
+                    <p>
+                      Team Type:
+                      {" "}
+                      {info.resource.type}
+                    </p>
+
+                    <p>
+                      Mission Status:
+                      {" "}
+                      {info.assignment.status}
+                    </p>
+
+                    {info.assignment.status === "IN_PROGRESS" && (
+
+                      <button
+                        onClick={() =>
+                          window.open(
+                            `/citizen-tracking?resourceId=${info.resource.id}`,
+                            "_blank"
+                          )
+                        }
+                      >
+                        View Live Tracking
+                      </button>
+
+                    )}
+
+                    {info.assignment.status === "COMPLETED" && (
+
+                      <p
+                        style={{
+                          color:
+                            "green",
+                          fontWeight:
+                            "bold"
+                        }}
+                      >
+                        Mission Completed ✅
+                      </p>
+
+                    )}
+
+                    {info.assignment.status === "ASSIGNED" && (
+
+                      <p
+                        style={{
+                          color:
+                            "orange"
+                        }}
+                      >
+                        Waiting for team acceptance...
+                      </p>
+
+                    )}
+
+                  </>
+
+                ) : (
+
+                  <p>
+                    No team assigned yet.
+                  </p>
+
+                )}
+
+              </div>
+            );
+          }
+        )
+      )}
+
+    </div>
+  );
 }
 
 export default CitizenDashboard;

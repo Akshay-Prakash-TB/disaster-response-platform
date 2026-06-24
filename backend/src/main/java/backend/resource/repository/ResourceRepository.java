@@ -10,4 +10,6 @@ public interface ResourceRepository
         extends JpaRepository<Resource, Long> {
 
     List<Resource> findByStatus(String status);
+
+    List<Resource> findByAssignedUserId(Long assignedUserId);
 }

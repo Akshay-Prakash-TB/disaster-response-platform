@@ -12,6 +12,8 @@ public class Resource {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private Long assignedUserId;
+
     private String name;
 
     private String type;
@@ -26,6 +28,14 @@ public class Resource {
 
     public Long getId() {
         return id;
+    }
+
+    public Long getAssignedUserId() {
+        return assignedUserId;
+    }
+
+    public void setAssignedUserId(Long assignedUserId) {
+        this.assignedUserId = assignedUserId;
     }
 
     public String getName() {

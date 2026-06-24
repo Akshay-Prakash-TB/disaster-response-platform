@@ -9,6 +9,8 @@ import RescueTeamDashboard from "./pages/RescueTeamDashboard";
 import CitizenDashboard from "./pages/CitizenDashboard";
 import AssignmentHistory from "./pages/AssignmentHistory";
 import VehicleTrackingMap from "./pages/VehicleTrackingMap";
+import CitizenTrackingMap from "./pages/CitizenTrackingMap";
+import ActiveMissions from "./pages/ActiveMissions";
 
 function App() {
   return (
@@ -24,6 +26,8 @@ function App() {
         <Route path="/citizen" element={<CitizenDashboard />} />
         <Route path="/assignments" element={<AssignmentHistory />} />
         <Route path="/tracking" element={<VehicleTrackingMap />} />
+        <Route path="/citizen-tracking" element={<CitizenTrackingMap />} />
+        <Route path="/admin/missions" element={<ActiveMissions />} />
       </Routes>
     </BrowserRouter>
   );

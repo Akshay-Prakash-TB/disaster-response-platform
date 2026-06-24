@@ -1,14 +1,19 @@
 package backend.assignment.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import backend.assignment.dto.ActiveMissionDTO;
+import backend.assignment.dto.RescueMissionDTO;
 import backend.assignment.entity.Assignment;
 import backend.assignment.repository.AssignmentRepository;
+import backend.auth.entity.User;
+import backend.auth.repository.UserRepository;
 import backend.incident.entity.Incident;
 import backend.incident.repository.IncidentRepository;
 import backend.resource.entity.Resource;
@@ -29,6 +34,9 @@ public class AssignmentService {
 
     @Autowired
     private TrackingService trackingService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public Assignment createAssignment(
             Long incidentId,
@@ -157,4 +165,145 @@ public class AssignmentService {
     public List<Assignment> getAllAssignments() {
         return assignmentRepository.findAllByOrderByAssignedAtDesc();
     }
+
+    public List<RescueMissionDTO>
+getRescueMissions(
+        Long userId) {
+
+        List<Resource> resources =
+                resourceRepository
+                        .findByAssignedUserId(
+                                userId);
+
+        List<Long> resourceIds =
+                resources.stream()
+                        .map(Resource::getId)
+                        .toList();
+
+        List<Assignment> assignments =
+                assignmentRepository
+                        .findByResourceIdIn(
+                                resourceIds);
+
+        List<RescueMissionDTO> missions =
+                new ArrayList<>();
+
+        for (Assignment assignment : assignments) {
+
+                Incident incident =
+                        incidentRepository
+                                .findById(
+                                        assignment.getIncidentId())
+                                .orElseThrow();
+
+                RescueMissionDTO dto =
+                        new RescueMissionDTO();
+
+                dto.setAssignmentId(
+                        assignment.getId());
+
+                dto.setIncidentId(
+                        incident.getId());
+
+                dto.setTitle(
+                        incident.getTitle());
+
+                dto.setDescription(
+                        incident.getDescription());
+
+                dto.setSeverity(
+                        incident.getSeverity());
+
+                dto.setLatitude(
+                        incident.getLatitude());
+
+                dto.setLongitude(
+                        incident.getLongitude());
+
+                dto.setCitizenId(
+                        incident.getCitizenId());
+
+                User citizen =
+                        userRepository
+                                .findById(
+                                        incident.getCitizenId())
+                                .orElse(null);
+
+                if(citizen != null) {
+
+                dto.setCitizenName(
+                        citizen.getName());
+
+                dto.setCitizenEmail(
+                        citizen.getEmail());
+                }
+
+                dto.setAssignmentStatus(
+                        assignment.getStatus());
+
+                missions.add(dto);
+        }
+
+        return missions;
+        }
+
+        public List<ActiveMissionDTO>
+        getActiveMissions() {
+
+        List<Assignment> assignments =
+                assignmentRepository
+                        .findByStatusIn(
+                                List.of(
+                                        "ASSIGNED",
+                                        "IN_PROGRESS"));
+
+        List<ActiveMissionDTO> result =
+                new ArrayList<>();
+
+        for (Assignment assignment : assignments) {
+
+                Incident incident =
+                        incidentRepository
+                                .findById(
+                                        assignment.getIncidentId())
+                                .orElseThrow();
+
+                Resource resource =
+                        resourceRepository
+                                .findById(
+                                        assignment.getResourceId())
+                                .orElseThrow();
+
+                ActiveMissionDTO dto =
+                        new ActiveMissionDTO();
+
+                dto.setAssignmentId(
+                        assignment.getId());
+
+                dto.setIncidentTitle(
+                        incident.getTitle());
+
+                dto.setResourceName(
+                        resource.getName());
+
+                dto.setStatus(
+                        assignment.getStatus());
+
+                if (resource.getAssignedUserId() != null) {
+
+                User user =
+                        userRepository
+                                .findById(
+                                        resource.getAssignedUserId())
+                                .orElseThrow();
+
+                dto.setRescueTeam(
+                        user.getName());
+                }
+
+                result.add(dto);
+        }
+
+        return result;
+        }
 }

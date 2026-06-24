@@ -1,5 +1,6 @@
 package backend.incident.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import backend.auth.entity.User;
 import backend.auth.repository.UserRepository;
 import backend.auth.service.UserService;
+import backend.incident.dto.IncidentAdminDTO;
 import backend.incident.entity.Incident;
 import backend.incident.repository.IncidentRepository;
 
@@ -18,10 +20,10 @@ public class IncidentService {
     private IncidentRepository incidentRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
-    private UserService userService;
+    private UserRepository userRepository;
 
     public Incident createIncident(
     Incident incident,
@@ -82,4 +84,49 @@ getMyIncidents(
                 .findByCitizenId(
                         user.getId());
     }
-    }
+
+    public List<IncidentAdminDTO> getAllIncidentsForAdmin() {
+
+        List<Incident> incidents =
+                incidentRepository.findAll();
+
+        List<IncidentAdminDTO> result =
+                new ArrayList<>();
+
+        for(Incident incident : incidents) {
+
+                IncidentAdminDTO dto =
+                        new IncidentAdminDTO();
+
+                dto.setId(incident.getId());
+                dto.setTitle(incident.getTitle());
+                dto.setDescription(
+                        incident.getDescription());
+                dto.setSeverity(
+                        incident.getSeverity());
+                dto.setStatus(
+                        incident.getStatus());
+                dto.setIncidentType(
+                        incident.getIncidentType());
+
+                dto.setCitizenId(
+                        incident.getCitizenId());
+
+                userRepository
+                .findById(
+                        incident.getCitizenId())
+                .ifPresent(user -> {
+
+                        dto.setCitizenName(
+                                user.getName());
+
+                        dto.setCitizenEmail(
+                                user.getEmail());
+                });
+
+                result.add(dto);
+        }
+
+        return result;
+        }
+}

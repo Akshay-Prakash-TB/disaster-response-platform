@@ -34,6 +34,11 @@ function Login() {
       );
 
       sessionStorage.setItem(
+        "resourceId",
+        res.data.resourceId
+      );
+
+      sessionStorage.setItem(
         "name",
         res.data.name
       );

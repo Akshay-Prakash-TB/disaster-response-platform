@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import backend.assignment.dto.ActiveMissionDTO;
+import backend.assignment.dto.RescueMissionDTO;
 import backend.assignment.entity.Assignment;
 import backend.assignment.service.AssignmentService;
 
@@ -58,4 +60,32 @@ public class AssignmentController {
         return assignmentService
                 .getAllAssignments();
     }
+
+    @GetMapping("/resource/{resourceId}")
+        public List<RescueMissionDTO>
+        getResourceAssignments(
+                @PathVariable Long resourceId) {
+
+        return assignmentService
+                .getRescueMissions(
+                        resourceId);
+        }
+
+        @GetMapping("/user/{userId}")
+        public List<RescueMissionDTO>
+        getUserAssignments(
+                @PathVariable Long userId) {
+
+        return assignmentService
+                .getRescueMissions(
+                        userId);
+        }
+
+        @GetMapping("/active")
+        public List<ActiveMissionDTO>
+        getActiveMissions() {
+
+        return assignmentService
+                .getActiveMissions();
+        }
 }

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import backend.auth.service.UserService;
+import backend.incident.dto.IncidentAdminDTO;
 import backend.incident.entity.Incident;
 import backend.incident.service.IncidentService;
 
@@ -25,9 +25,6 @@ public class IncidentController {
 
     @Autowired
     private IncidentService incidentService;
-
-    @Autowired
-    private UserService userService;
 
     @PostMapping("/report")
     public Incident reportIncident(
@@ -88,5 +85,13 @@ public class IncidentController {
         return incidentService
                 .getMyIncidents(
                         token);
+    }
+
+    @GetMapping("/admin/all")
+    public List<IncidentAdminDTO>
+    getAllForAdmin() {
+
+        return incidentService
+                .getAllIncidentsForAdmin();
     }
 }

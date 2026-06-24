@@ -28,6 +28,12 @@ public class VehicleTracking {
 
     private Integer currentPointIndex;
 
+    private Double startLatitude;
+    private Double startLongitude;
+
+    private Double destinationLatitude;
+    private Double destinationLongitude;
+
     @Column(columnDefinition = "TEXT")
     private String routeGeometry;
 
@@ -94,5 +100,45 @@ public class VehicleTracking {
             String routeGeometry) {
         this.routeGeometry =
                 routeGeometry;
+    }
+
+    public Double getStartLatitude() {
+        return startLatitude;
+    }
+
+    public void setStartLatitude(
+            Double startLatitude) {
+        this.startLatitude =
+                startLatitude;
+    }
+
+    public Double getStartLongitude() {
+        return startLongitude;
+    }
+
+    public void setStartLongitude(
+            Double startLongitude) {
+        this.startLongitude =
+                startLongitude;
+    }
+
+    public Double getDestinationLatitude() {
+        return destinationLatitude;
+    }
+
+    public void setDestinationLatitude(
+            Double destinationLatitude) {
+        this.destinationLatitude =
+                destinationLatitude;
+    }
+
+    public Double getDestinationLongitude() {
+        return destinationLongitude;
+    }
+
+    public void setDestinationLongitude(
+            Double destinationLongitude) {
+        this.destinationLongitude =
+                destinationLongitude;
     }
 }

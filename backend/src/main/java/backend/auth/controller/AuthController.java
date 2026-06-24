@@ -1,7 +1,10 @@
 package backend.auth.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import backend.auth.dto.AuthResponse;
 import backend.auth.dto.LoginResponse;
+import backend.auth.dto.RescueUserDTO;
 import backend.auth.entity.User;
 import backend.auth.service.UserService;
 
@@ -33,5 +37,13 @@ public class AuthController {
         return userService.loginUser(
                 user.getEmail(),
                 user.getPassword());
+    }
+
+    @GetMapping("/rescue-users")
+    public List<RescueUserDTO>
+    getRescueUsers() {
+
+        return userService
+                .getRescueUsers();
     }
 }

@@ -9,6 +9,13 @@ import {
 } from "react-leaflet";
 
 import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+
+const vehicleIcon = L.icon({
+  iconUrl:
+    "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+  iconSize: [40, 40]
+});
 
 function VehicleTrackingMap() {
 
@@ -24,9 +31,12 @@ function VehicleTrackingMap() {
           "http://localhost:8080/tracking/all"
         );
 
-      setVehicles(response.data);
+      setVehicles(
+        response.data
+      );
 
     } catch (error) {
+
       console.error(error);
     }
   };
@@ -38,16 +48,25 @@ function VehicleTrackingMap() {
     const interval =
       setInterval(
         fetchTracking,
-        3000
+        1000
       );
 
     return () =>
-      clearInterval(interval);
+      clearInterval(
+        interval
+      );
 
   }, []);
 
-  if (vehicles.length === 0) {
-    return <h2>Loading...</h2>;
+  if (
+    vehicles.length === 0
+  ) {
+
+    return (
+      <h2>
+        Loading...
+      </h2>
+    );
   }
 
   return (
@@ -77,6 +96,7 @@ function VehicleTrackingMap() {
           (vehicle) => (
 
             <Marker
+              icon={vehicleIcon}
               key={
                 vehicle.resourceId
               }

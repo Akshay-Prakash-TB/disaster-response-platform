@@ -13,7 +13,7 @@ function AdminIncidents() {
   const fetchIncidents = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8080/incident/all"
+        "http://localhost:8080/incident/admin/all"
       );
 
       setIncidents(response.data);
@@ -177,11 +177,23 @@ function AdminIncidents() {
     </div>
 
     <div style={{ marginBottom: "20px" }}>
+
       <Link to="/assignments">
         <button>
           Assignment History
         </button>
       </Link>
+
+      <Link to="/admin/missions">
+        <button
+          style={{
+            marginLeft: "10px"
+          }}
+        >
+          Active Missions
+        </button>
+      </Link>
+
     </div>
 
     <table border="1" cellPadding="10">
@@ -192,6 +204,8 @@ function AdminIncidents() {
           <th>Description</th>
           <th>Severity</th>
           <th>Status</th>
+          <th>Citizen Name</th>
+          <th>Citizen Email</th>
           <th>Assign Resource</th>
           <th>Recommendations</th>
           <th>Actions</th>
@@ -206,6 +220,8 @@ function AdminIncidents() {
             <td>{incident.description}</td>
             <td>{incident.severity}</td>
             <td>{incident.status}</td>
+            <td>{incident.citizenName}</td>
+            <td>{incident.citizenEmail}</td>
 
             <td>
               <select

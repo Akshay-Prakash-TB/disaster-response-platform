@@ -21,4 +21,6 @@ public interface AssignmentRepository
     Optional <Assignment>findFirstByIncidentId(Long incidentId);
 
     List<Assignment> findAllByOrderByAssignedAtDesc();
+
+    List<Assignment> findByResourceIdIn(List<Long> resourceIds);
 }
