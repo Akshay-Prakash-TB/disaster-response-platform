@@ -11,6 +11,7 @@ import org.springframework.web.client.RestClient;
 import backend.assignment.service.AssignmentService;
 import backend.incident.entity.Incident;
 import backend.incident.repository.IncidentRepository;
+import backend.notification.service.NotificationService;
 import backend.resource.dto.OsrmResponse;
 import backend.resource.dto.ResourceRecommendation;
 import backend.resource.dto.RouteInfo;
@@ -32,6 +33,9 @@ public class ResourceService {
 
     @Autowired
     private TrackingService trackingService;
+
+    @Autowired 
+    private NotificationService notificationService;
 
     private final RestClient restClient =
             RestClient.create();
@@ -69,6 +73,18 @@ public class ResourceService {
         assignmentService.createAssignment(
                 incidentId,
                 resourceId);
+
+        notificationService.createNotification(
+                incident.getCitizenId(),
+                "Team Assigned",
+                "A rescue team has been assigned to your incident."
+        );
+
+        notificationService.createNotification(
+                resource.getAssignedUserId(),
+                "New Assignment",
+                "You have been assigned to a new incident."
+        );
 
         return resourceRepository.save(resource);
         }

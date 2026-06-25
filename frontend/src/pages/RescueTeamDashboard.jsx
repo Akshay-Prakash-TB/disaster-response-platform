@@ -3,204 +3,378 @@ import axios from "axios";
 
 function RescueTeamDashboard() {
 
-const [missions, setMissions] =
-useState([]);
+  const [missions, setMissions] =
+    useState([]);
 
-const fetchMissions =
-async () => {
-  try {
+  const [notifications, setNotifications] =
+    useState([]);
 
-    const userId =
-      sessionStorage.getItem(
-        "userId"
-      );
+  const [showNotifications,
+    setShowNotifications] =
+    useState(false);
 
-    console.log(
-      "User ID:",
-      userId
-    );
+  const fetchNotifications =
+    async () => {
 
-    const response =
-      await axios.get(
-        `http://localhost:8080/assignment/user/${userId}`
-      );
+      try {
 
-    console.log(
-      "Missions:",
-      response.data
-    );
+        const userId =
+          sessionStorage.getItem(
+            "userId"
+          );
 
-    setMissions(
-      response.data
-    );
+        const response =
+          await axios.get(
+            `http://localhost:8080/notification/${userId}`
+          );
 
-  } catch (error) {
+        setNotifications(
+          response.data
+        );
 
-    console.error(error);
-  }
-};
+      } catch(error) {
 
-const acceptMission =
-async (id) => {
-  try {
+        console.error(error);
+      }
+    };
 
-    await axios.put(
-      `http://localhost:8080/assignment/${id}/accept`
-    );
+  const fetchMissions =
+    async () => {
+
+      try {
+
+        const userId =
+          sessionStorage.getItem(
+            "userId"
+          );
+
+        const response =
+          await axios.get(
+            `http://localhost:8080/assignment/user/${userId}`
+          );
+
+        setMissions(
+          response.data
+        );
+
+      } catch (error) {
+
+        console.error(error);
+      }
+    };
+
+  const acceptMission =
+    async (id) => {
+
+      try {
+
+        await axios.put(
+          `http://localhost:8080/assignment/${id}/accept`
+        );
+
+        fetchMissions();
+
+      } catch (error) {
+
+        console.error(error);
+      }
+    };
+
+  const completeMission =
+    async (id) => {
+
+      try {
+
+        await axios.put(
+          `http://localhost:8080/assignment/${id}/complete`
+        );
+
+        fetchMissions();
+
+      } catch (error) {
+
+        console.error(error);
+      }
+    };
+
+  useEffect(() => {
 
     fetchMissions();
+    fetchNotifications();
 
-  } catch (error) {
+    const missionInterval =
+      setInterval(
+        fetchMissions,
+        3000
+      );
 
-    console.error(error);
-  }
-};
+    const notificationInterval =
+      setInterval(
+        fetchNotifications,
+        3000
+      );
 
-const completeMission =
-async (id) => {
-  try {
+    return () => {
 
-    await axios.put(
-      `http://localhost:8080/assignment/${id}/complete`
-    );
+      clearInterval(
+        missionInterval
+      );
 
-    fetchMissions();
+      clearInterval(
+        notificationInterval
+      );
 
-  } catch (error) {
+    };
 
-    console.error(error);
-  }
-};
+  }, []);
 
-useEffect(() => {
+  return (
 
-fetchMissions();
+    <div
+      style={{
+        padding: "20px"
+      }}
+    >
 
-}, []);
+      <div
+        style={{
+          display: "flex",
+          justifyContent:
+            "space-between",
+          alignItems:
+            "center"
+        }}
+      >
 
-return (
-<div style={{ padding: "20px" }}>
-
-  <h2>
-    Rescue Team Dashboard
-  </h2>
-
-  {missions.length === 0 ? (
-
-    <p>
-      No missions assigned.
-    </p>
-
-  ) : (
-
-    missions.map(
-      (mission) => (
+        <h2>
+          Rescue Team Dashboard
+        </h2>
 
         <div
-          key={
-            mission.assignmentId
-          }
           style={{
-            border:
-              "1px solid gray",
-            padding:
-              "15px",
-            marginBottom:
-              "15px",
-            borderRadius:
-              "8px"
+            position:
+              "relative"
           }}
         >
 
-          <h3>
-            {mission.title}
-          </h3>
+          <button
+            onClick={() =>
+              setShowNotifications(
+                !showNotifications
+              )
+            }
+          >
+            🔔 (
+            {
+              notifications.filter(
+                n => !n.read
+              ).length
+            }
+            )
+          </button>
 
-          <p>
-            {mission.description}
-          </p>
+          {showNotifications && (
 
-          <p>
-            Severity:
-            {" "}
-            {mission.severity}
-          </p>
-
-          <p>
-            Citizen:
-            {" "}
-            {mission.citizenName}
-          </p>
-
-          <p>
-            Email:
-            {" "}
-            {mission.citizenEmail}
-          </p>
-
-          <p>
-            Incident ID:
-            {" "}
-            {mission.incidentId}
-          </p>
-
-          <p>
-            Latitude:
-            {" "}
-            {mission.latitude}
-          </p>
-
-          <p>
-            Longitude:
-            {" "}
-            {mission.longitude}
-          </p>
-
-          <p>
-            Status:
-            {" "}
-            {mission.assignmentStatus}
-          </p>
-
-          {mission.assignmentStatus ===
-            "ASSIGNED" && (
-
-            <button
-              onClick={() =>
-                acceptMission(
-                  mission.assignmentId
-                )
-              }
+            <div
+              style={{
+                position:
+                  "absolute",
+                right: 0,
+                width: "300px",
+                background:
+                  "white",
+                border:
+                  "1px solid gray",
+                padding: "10px",
+                zIndex: 1000
+              }}
             >
-              Accept Mission
-            </button>
 
-          )}
+              {notifications.length === 0 ? (
 
-          {mission.assignmentStatus ===
-            "IN_PROGRESS" && (
+                <p>
+                  No notifications
+                </p>
 
-            <button
-              onClick={() =>
-                completeMission(
-                  mission.assignmentId
+              ) : (
+
+                notifications.map(
+                  notification => (
+
+                    <div
+                      key={
+                        notification.id
+                      }
+                      style={{
+                        borderBottom:
+                          "1px solid #ddd",
+                        marginBottom:
+                          "10px",
+                        paddingBottom:
+                          "10px"
+                      }}
+                    >
+
+                      <strong>
+                        {
+                          notification.title
+                        }
+                      </strong>
+
+                      <p>
+                        {
+                          notification.message
+                        }
+                      </p>
+
+                      {!notification.read && (
+
+                        <button
+                          onClick={async () => {
+
+                            await axios.put(
+                              `http://localhost:8080/notification/read/${notification.id}`
+                            );
+
+                            fetchNotifications();
+                          }}
+                        >
+                          Mark Read
+                        </button>
+
+                      )}
+
+                    </div>
+                  )
                 )
-              }
-            >
-              Complete Mission
-            </button>
+
+              )}
+
+            </div>
 
           )}
 
         </div>
 
-      )
-    )
+      </div>
 
-  )}
+      {missions.length === 0 ? (
 
-</div>
-);
+        <p>
+          No missions assigned.
+        </p>
+
+      ) : (
+
+        missions.map(
+          (mission) => (
+
+            <div
+              key={
+                mission.assignmentId
+              }
+              style={{
+                border:
+                  "1px solid gray",
+                padding:
+                  "15px",
+                marginBottom:
+                  "15px",
+                borderRadius:
+                  "8px"
+              }}
+            >
+
+              <h3>
+                {mission.title}
+              </h3>
+
+              <p>
+                {mission.description}
+              </p>
+
+              <p>
+                Severity:
+                {" "}
+                {mission.severity}
+              </p>
+
+              <p>
+                Citizen:
+                {" "}
+                {mission.citizenName}
+              </p>
+
+              <p>
+                Email:
+                {" "}
+                {mission.citizenEmail}
+              </p>
+
+              <p>
+                Incident ID:
+                {" "}
+                {mission.incidentId}
+              </p>
+
+              <p>
+                Latitude:
+                {" "}
+                {mission.latitude}
+              </p>
+
+              <p>
+                Longitude:
+                {" "}
+                {mission.longitude}
+              </p>
+
+              <p>
+                Status:
+                {" "}
+                {mission.assignmentStatus}
+              </p>
+
+              {mission.assignmentStatus ===
+                "ASSIGNED" && (
+
+                <button
+                  onClick={() =>
+                    acceptMission(
+                      mission.assignmentId
+                    )
+                  }
+                >
+                  Accept Mission
+                </button>
+
+              )}
+
+              {mission.assignmentStatus ===
+                "IN_PROGRESS" && (
+
+                <button
+                  onClick={() =>
+                    completeMission(
+                      mission.assignmentId
+                    )
+                  }
+                >
+                  Complete Mission
+                </button>
+
+              )}
+
+            </div>
+
+          )
+        )
+
+      )}
+
+    </div>
+
+  );
 }
 
 export default RescueTeamDashboard;

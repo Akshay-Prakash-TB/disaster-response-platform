@@ -16,6 +16,7 @@ import backend.auth.entity.User;
 import backend.auth.repository.UserRepository;
 import backend.incident.entity.Incident;
 import backend.incident.repository.IncidentRepository;
+import backend.notification.service.NotificationService;
 import backend.resource.entity.Resource;
 import backend.resource.repository.ResourceRepository;
 import backend.tracking.service.TrackingService;
@@ -37,6 +38,9 @@ public class AssignmentService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private NotificationService notificationService;
 
     public Assignment createAssignment(
             Long incidentId,
@@ -92,6 +96,24 @@ public class AssignmentService {
         incidentRepository.save(
                 incident);
 
+        notificationService.createNotification(
+                incident.getCitizenId(),
+                "Mission Started",
+                "Rescue team has started responding."
+        );
+
+        List<User> admins =
+                userRepository.findByRole("ADMIN");
+
+        for(User admin : admins) {
+
+        notificationService.createNotification(
+                admin.getId(),
+                "Mission Accepted",
+                "A rescue team has accepted a mission."
+        );
+        }
+
         return assignmentRepository
                 .save(assignment);
     }
@@ -140,6 +162,24 @@ public class AssignmentService {
 
         resourceRepository.save(
                 resource);
+
+        notificationService.createNotification(
+                incident.getCitizenId(),
+                "Incident Resolved",
+                "The rescue team has completed the mission and your incident has been resolved."
+        );
+
+        List<User> admins =
+        userRepository.findByRole("ADMIN");
+
+        for(User admin : admins) {
+
+        notificationService.createNotification(
+                admin.getId(),
+                "Mission Completed",
+                "A rescue team has completed a mission."
+        );
+        }
 
         return assignmentRepository
                 .save(assignment);

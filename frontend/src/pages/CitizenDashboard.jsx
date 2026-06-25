@@ -10,6 +10,37 @@ function CitizenDashboard() {
   const [assignments, setAssignments] =
     useState({});
 
+  const [notifications, setNotifications] =
+    useState([]);
+
+  const [showNotifications, setShowNotifications] =
+    useState(false);
+
+  const fetchNotifications =
+    async () => {
+
+      try {
+
+        const userId =
+          sessionStorage.getItem(
+            "userId"
+          );
+
+        const response =
+          await axios.get(
+            `http://localhost:8080/notification/${userId}`
+          );
+
+        setNotifications(
+          response.data
+        );
+
+      } catch(error) {
+
+        console.error(error);
+      }
+    };
+
   const fetchCitizenIncidents =
     async () => {
 
@@ -86,9 +117,34 @@ function CitizenDashboard() {
 
   useEffect(() => {
 
-    fetchCitizenIncidents();
+  fetchCitizenIncidents();
+  fetchNotifications();
 
-  }, []);
+  const interval =
+    setInterval(
+      fetchCitizenIncidents,
+      3000
+    );
+
+  const notificationInterval =
+    setInterval(
+      fetchNotifications,
+      3000
+    );
+
+  return () => {
+
+    clearInterval(
+      interval
+    );
+
+    clearInterval(
+      notificationInterval
+    );
+
+  };
+
+}, []);
 
   return (
     <div
@@ -97,9 +153,125 @@ function CitizenDashboard() {
       }}
     >
 
-      <h1>
-        Citizen Dashboard
-      </h1>
+      <div
+  style={{
+    display: "flex",
+    justifyContent:
+      "space-between",
+    alignItems: "center"
+  }}
+>
+
+  <h1>
+    Citizen Dashboard
+  </h1>
+
+  <div
+    style={{
+      position: "relative"
+    }}
+  >
+
+    <button
+      onClick={() =>
+        setShowNotifications(
+          !showNotifications
+        )
+      }
+    >
+      🔔 (
+      {
+        notifications.filter(
+          n => !n.read
+        ).length
+      }
+      )
+    </button>
+
+    {showNotifications && (
+
+      <div
+            style={{
+              position:
+                "absolute",
+              right: 0,
+              width: "300px",
+              background:
+                "white",
+              border:
+                "1px solid gray",
+              padding: "10px",
+              zIndex: 1000
+            }}
+          >
+
+            {notifications.length === 0 ? (
+
+              <p>
+                No notifications
+              </p>
+
+            ) : (
+
+              notifications.map(
+                notification => (
+
+                  <div
+                    key={
+                      notification.id
+                    }
+                    style={{
+                      borderBottom:
+                        "1px solid #ddd",
+                      marginBottom:
+                        "10px",
+                      paddingBottom:
+                        "10px"
+                    }}
+                  >
+
+                    <strong>
+                      {
+                        notification.title
+                      }
+                    </strong>
+
+                    <p>
+                      {
+                        notification.message
+                      }
+                    </p>
+
+                    {!notification.read && (
+
+                      <button
+                        onClick={async () => {
+
+                          await axios.put(
+                            `http://localhost:8080/notification/read/${notification.id}`
+                          );
+
+                          fetchNotifications();
+                        }}
+                      >
+                        Mark Read
+                      </button>
+
+                    )}
+
+                  </div>
+                )
+              )
+
+            )}
+
+          </div>
+
+        )}
+
+      </div>
+
+    </div>
 
       <Link to="/incident">
         <button>
