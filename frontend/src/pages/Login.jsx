@@ -77,6 +77,14 @@ function Login() {
         );
       }
 
+      else if (
+          res.data.role === "NGO"
+      ) {
+
+          navigate("/ngo");
+
+      }
+
     } catch (err) {
 
       setError(

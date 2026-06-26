@@ -279,6 +279,30 @@ function CitizenDashboard() {
         </button>
       </Link>
 
+      <Link to="/citizen/relief-request">
+          <button
+              style={{
+                  marginLeft: "10px"
+              }}
+          >
+              Request Relief
+          </button>
+      </Link>
+
+      <Link to="/citizen/relief-requests">
+
+          <button
+              style={{
+                  marginLeft: "10px"
+              }}
+          >
+
+              My Relief Requests
+
+          </button>
+
+      </Link>
+
       <hr />
 
       <h2>

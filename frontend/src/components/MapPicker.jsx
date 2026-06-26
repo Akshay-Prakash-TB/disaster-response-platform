@@ -1,6 +1,15 @@
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
-import { useState } from "react";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  useMapEvents,
+  useMap
+} from "react-leaflet";
+
+import { useState, useEffect } from "react";
+
 import "leaflet/dist/leaflet.css";
+
 import L from "leaflet";
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -14,44 +23,157 @@ L.Icon.Default.mergeOptions({
     "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
-function LocationMarker({ setCoordinates }) {
-  const [position, setPosition] = useState(null);
+function ChangeView({ latitude, longitude }) {
+
+  const map = useMap();
+
+  useEffect(() => {
+
+    if (latitude != null && longitude != null) {
+
+      map.setView([latitude, longitude], 15);
+
+    }
+
+  }, [latitude, longitude, map]);
+
+  return null;
+
+}
+
+function LocationMarker({
+
+  setCoordinates,
+
+  latitude,
+
+  longitude
+
+}) {
+
+  const [position, setPosition] = useState(
+
+    latitude != null && longitude != null
+
+      ? {
+          lat: latitude,
+          lng: longitude
+        }
+
+      : null
+
+  );
+
+  useEffect(() => {
+
+    if (latitude != null && longitude != null) {
+
+      setPosition({
+
+        lat: latitude,
+
+        lng: longitude
+
+      });
+
+    }
+
+  }, [latitude, longitude]);
 
   useMapEvents({
+
     click(e) {
+
       setPosition(e.latlng);
 
       setCoordinates({
+
         latitude: e.latlng.lat,
-        longitude: e.latlng.lng,
+
+        longitude: e.latlng.lng
+
       });
-    },
+
+    }
+
   });
 
-  return position ? <Marker position={position} /> : null;
+  return position
+
+    ? <Marker position={position} />
+
+    : null;
+
 }
 
-function MapPicker({ setCoordinates }) {
+function MapPicker({
+
+  setCoordinates,
+
+  latitude,
+
+  longitude
+
+}) {
+
   return (
+
     <MapContainer
-      center={[11.1271, 78.6569]}
+
+      center={
+
+        latitude != null && longitude != null
+
+          ? [latitude, longitude]
+
+          : [11.1271, 78.6569]
+
+      }
+
       zoom={7}
+
       style={{
+
         height: "400px",
+
         width: "100%",
-        marginTop: "10px",
+
+        marginTop: "10px"
+
       }}
+
     >
+
+      <ChangeView
+
+        latitude={latitude}
+
+        longitude={longitude}
+
+      />
+
       <TileLayer
+
         attribution="&copy; OpenStreetMap contributors"
+
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+
       />
 
       <LocationMarker
+
         setCoordinates={setCoordinates}
+
+        latitude={latitude}
+
+        longitude={longitude}
+
       />
+
     </MapContainer>
+
   );
+
 }
 
 export default MapPicker;
