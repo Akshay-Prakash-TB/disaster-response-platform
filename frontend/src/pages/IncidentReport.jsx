@@ -10,7 +10,8 @@ description: "",
 severity: "",
 incidentType: "",
 latitude: "",
-longitude: ""
+longitude: "",
+image: null
 });
 
 const [message, setMessage] =
@@ -26,47 +27,100 @@ e.target.value
 
 const handleSubmit = async (e) => {
 
-e.preventDefault();
+    e.preventDefault();
 
-try {
+    try {
 
-  const token =
-    sessionStorage.getItem(
-      "token"
-    );
+        const token =
+            sessionStorage.getItem(
+                "token"
+            );
 
-  await axios.post(
-    "http://localhost:8080/incident/report",
-    formData,
-    {
-      headers: {
-        Authorization:
-          `Bearer ${token}`
-      }
+        const data =
+            new FormData();
+
+        const incident = {
+
+            title: formData.title,
+            description: formData.description,
+            severity: formData.severity,
+            incidentType: formData.incidentType,
+            latitude: formData.latitude,
+            longitude: formData.longitude
+
+        };
+
+        data.append(
+
+            "incident",
+
+            new Blob(
+                [JSON.stringify(incident)],
+                {
+                    type: "application/json"
+                }
+            )
+
+        );
+
+        if (formData.image) {
+
+            data.append(
+                "image",
+                formData.image
+            );
+
+        }
+
+        await axios.post(
+
+            "http://localhost:8080/incident/report",
+
+            data,
+
+            {
+
+                headers: {
+
+                    Authorization:
+                        `Bearer ${token}`,
+
+                    "Content-Type":
+                        "multipart/form-data"
+
+                }
+
+            }
+
+        );
+
+        setMessage(
+            "Incident reported successfully"
+        );
+
+        setFormData({
+
+            title: "",
+            description: "",
+            severity: "",
+            incidentType: "",
+            latitude: "",
+            longitude: "",
+            image: null
+
+        });
+
     }
-  );
 
-  setMessage(
-    "Incident reported successfully"
-  );
+    catch (error) {
 
-  setFormData({
-    title: "",
-    description: "",
-    severity: "",
-    incidentType: "",
-    latitude: "",
-    longitude: ""
-  });
+        console.error(error);
 
-} catch (error) {
+        setMessage(
+            "Failed to report incident"
+        );
 
-  console.error(error);
-
-  setMessage(
-    "Failed to report incident"
-  );
-}
+    }
 
 };
 
@@ -212,6 +266,22 @@ return (
       {formData.longitude ||
         "Not Selected"}
     </p>
+
+    <br />
+    <br />
+
+    <h3>Upload Incident Image (Optional)</h3>
+
+      <input
+          type="file"
+          accept="image/*"
+          onChange={(e) =>
+              setFormData({
+                  ...formData,
+                  image: e.target.files[0]
+              })
+          }
+      />
 
     <br />
     <br />

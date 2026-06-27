@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import AIAnalysisModal from "../components/AIAnalysisModal";
 
 function AdminIncidents() {
   const [incidents, setIncidents] = useState([]);
@@ -9,6 +10,7 @@ function AdminIncidents() {
   const [resources, setResources] = useState([]);
   const [selectedResources, setSelectedResources] = useState({});
   const [recommendations,setRecommendations] = useState({});
+  const [selectedIncidentId,setSelectedIncidentId] = useState(null);
 
   const fetchIncidents = async () => {
     try {
@@ -65,18 +67,6 @@ function AdminIncidents() {
       setIncidents(response.data);
     } catch (error) {
       console.error(error);
-    }
-  };
-
-  const updateStatus = async (id, status) => {
-    try {
-      await axios.put(
-        `http://localhost:8080/incident/${id}/status?status=${status}`
-      );
-
-      fetchIncidents();
-    } catch (error) {
-      console.error("Error updating status:", error);
     }
   };
 
@@ -204,11 +194,14 @@ function AdminIncidents() {
           <th>Description</th>
           <th>Severity</th>
           <th>Status</th>
+          <th>Duplicate</th>
+          <th>Similarity</th>
+          <th>Matched Incident</th>
           <th>Citizen Name</th>
           <th>Citizen Email</th>
           <th>Assign Resource</th>
           <th>Recommendations</th>
-          <th>Actions</th>
+          <th>AI</th>
         </tr>
       </thead>
 
@@ -219,7 +212,59 @@ function AdminIncidents() {
             <td>{incident.title}</td>
             <td>{incident.description}</td>
             <td>{incident.severity}</td>
+
             <td>{incident.status}</td>
+
+            <td>
+
+              {incident.possibleDuplicate ? (
+
+                <span
+                  style={{
+                    background: "#ffdddd",
+                    color: "#c0392b",
+                    padding: "5px 10px",
+                    borderRadius: "6px",
+                    fontWeight: "bold"
+                  }}
+                >
+                  ⚠ Possible Duplicate
+                </span>
+
+              ) : (
+
+                <span
+                  style={{
+                    background: "#ddffdd",
+                    color: "#27ae60",
+                    padding: "5px 10px",
+                    borderRadius: "6px",
+                    fontWeight: "bold"
+                  }}
+                >
+                  ✓ No
+                </span>
+
+              )}
+
+            </td>
+
+            <td>
+
+              {incident.duplicateScore != null
+                ? (incident.duplicateScore * 100).toFixed(0) + "%"
+                : "-"}
+
+            </td>
+
+            <td>
+
+              {incident.duplicateIncidentId != null
+                  ? "Incident #" + incident.duplicateIncidentId
+                  : "-"}
+
+            </td>
+
             <td>{incident.citizenName}</td>
             <td>{incident.citizenEmail}</td>
 
@@ -358,42 +403,28 @@ function AdminIncidents() {
 
             <td>
               <button
-                disabled={
-                  incident.status !==
-                  "ASSIGNED"
-                }
                 onClick={() =>
-                  updateStatus(
-                    incident.id,
-                    "IN_PROGRESS"
+                  setSelectedIncidentId(
+                    incident.id
                   )
                 }
               >
-                Start
-              </button>
-
-              <button
-                style={{
-                  marginLeft: "10px",
-                }}
-                disabled={
-                  incident.status !==
-                  "IN_PROGRESS"
-                }
-                onClick={() =>
-                  updateStatus(
-                    incident.id,
-                    "RESOLVED"
-                  )
-                }
-              >
-                Resolve
+                View AI Analysis
               </button>
             </td>
           </tr>
         ))}
       </tbody>
     </table>
+
+    {
+      selectedIncidentId &&
+      <AIAnalysisModal
+        incidentId={selectedIncidentId}
+        onClose={() => setSelectedIncidentId(null)}
+      />
+    }
+
   </div>
 );
 }

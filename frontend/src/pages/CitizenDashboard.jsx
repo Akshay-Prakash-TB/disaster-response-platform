@@ -365,6 +365,21 @@ function CitizenDashboard() {
                   {incident.incidentType}
                 </p>
 
+                {incident.imagePath && (
+
+                    <button
+                        onClick={() =>
+                            window.open(
+                                `http://localhost:8080/uploads/${incident.imagePath}`,
+                                "_blank"
+                            )
+                        }
+                    >
+                        View Image
+                    </button>
+
+                )}
+
                 {info ? (
 
                   <>

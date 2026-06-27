@@ -13,6 +13,12 @@ public class IncidentAdminDTO {
     private String citizenName;
     private String citizenEmail;
 
+    private Boolean possibleDuplicate;
+
+    private Long duplicateIncidentId;
+
+    private Double duplicateScore;
+
     public IncidentAdminDTO() {}
 
     public Long getId() {
@@ -85,5 +91,29 @@ public class IncidentAdminDTO {
 
     public void setCitizenEmail(String citizenEmail) {
         this.citizenEmail = citizenEmail;
+    }
+
+    public Boolean getPossibleDuplicate() {
+        return possibleDuplicate;
+    }
+
+    public void setPossibleDuplicate(Boolean possibleDuplicate) {
+        this.possibleDuplicate = possibleDuplicate;
+    }
+
+    public Long getDuplicateIncidentId() {
+        return duplicateIncidentId;
+    }
+
+    public void setDuplicateIncidentId(Long duplicateIncidentId) {
+        this.duplicateIncidentId = duplicateIncidentId;
+    }
+
+    public Double getDuplicateScore() {
+        return duplicateScore;
+    }
+
+    public void setDuplicateScore(Double duplicateScore) {
+        this.duplicateScore = duplicateScore;
     }
 }

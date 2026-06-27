@@ -1,5 +1,7 @@
 package backend.incident.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,6 +31,16 @@ public class Incident {
     private Long citizenId;
 
     private String incidentType;
+
+    private String imagePath;
+
+    private LocalDateTime reportedAt;
+
+    private Boolean possibleDuplicate;
+
+    private Long duplicateIncidentId;
+
+    private Double duplicateScore;
 
     public Incident() {}
 
@@ -102,5 +114,45 @@ public class Incident {
 
     public void setIncidentType(String incidentType) {
         this.incidentType = incidentType;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
+    public LocalDateTime getReportedAt() {
+        return reportedAt;
+    }
+
+    public void setReportedAt(LocalDateTime reportedAt) {
+        this.reportedAt = reportedAt;
+    }
+
+    public Boolean getPossibleDuplicate() {
+        return possibleDuplicate;
+    }
+
+    public void setPossibleDuplicate(Boolean possibleDuplicate) {
+        this.possibleDuplicate = possibleDuplicate;
+    }
+
+    public Long getDuplicateIncidentId() {
+        return duplicateIncidentId;
+    }
+
+    public void setDuplicateIncidentId(Long duplicateIncidentId) {
+        this.duplicateIncidentId = duplicateIncidentId;
+    }
+
+    public Double getDuplicateScore() {
+        return duplicateScore;
+    }
+
+    public void setDuplicateScore(Double duplicateScore) {
+        this.duplicateScore = duplicateScore;
     }
 }
